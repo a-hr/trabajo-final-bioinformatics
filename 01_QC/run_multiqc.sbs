@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH --job-name=multiqc
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=4G
+#SBATCH --time=00:25:00
+#SBATCH -o ./logs/%x_%A_%a.out
+#SBATCH --time=00:25:00
+
+module load Python
+conda activate /scratch/heral/envs/NGS
+
+multiqc $1 -n $2

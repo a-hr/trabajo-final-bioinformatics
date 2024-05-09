@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#SBATCH --job-name=fastqc
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=4G
+#SBATCH --time=00:25:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+samples=$1
+fastqc_output=$2
+
+files=($(realpath $samples/*.fastq.gz))
+file=${files[$SLURM_ARRAY_TASK_ID]}
+
+module load Python
+conda activate /scratch/heral/envs/NGS
+
+fastqc -o $2 $file
