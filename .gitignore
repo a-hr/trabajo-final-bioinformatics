@@ -1,0 +1,9 @@
+# RNAseq and DNAseq samples
+samples/dna/*
+samples/rna/*
+
+# logs
+**/logs/*
+
+# multiqc data
+**/multiqc*data/*
