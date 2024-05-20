@@ -1,9 +1,16 @@
 # RNAseq and DNAseq samples
 samples/dna/*
 samples/rna/*
+samples/references/*
 
 # logs
 **/logs/*
 
 # multiqc data
 **/multiqc*data/*
+
+# binaries
+bin/*
+
+# bam results
+**/*bams
