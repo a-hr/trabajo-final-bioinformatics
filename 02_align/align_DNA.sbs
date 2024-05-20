@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#SBATCH --job-name=BWA
+#SBATCH --cpus-per-task=8
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=03:00:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+module load Python
+conda activate /scratch/heral/envs/NGS
+
+samples_path=$1
+samples1=($(realpath $samples_path/*_1.fastq.gz))
+
+reference_fa=$2 # reference fasta file, the index will be along side it
+
+i=$SLURM_ARRAY_TASK_ID
+fq1=${samples1[$i]}
+fq2=${fq1/_1/_2}
+
+mkdir -p dna_bams stats_reports_DNA
+
+samplename=$(basename $fq1 _1.fastq.gz).bam
+
+bwa mem -M -t 8 \
+	-R "@RG\tID:ind1\tSM:ind1\tLB:ind1\tPU:ind1\tPL:Illumina" \
+	$reference_fa \
+	$fq1 $fq2 \
+	| samblaster -M | samtools fixmate - - | samtools sort -O bam \
+	-o dna_bams/$samplename
+
+samtools index dna_bams/$samplename
+samtools stats dna_bams/$samplename | grep ^SN \
+    | cut -f 2- \
+    > stats_reports_DNA/$(basename $samplename .bam).stats

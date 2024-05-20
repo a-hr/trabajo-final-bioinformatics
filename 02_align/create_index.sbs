@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#SBATCH --job-name=index
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=32G
+#SBATCH --time=01:00:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+module load Python
+conda activate /scratch/heral/envs/NGS
+
+reference_fa=$1
+aligner=$2 # kallisto, bwa
+
+if [ $aligner == "kallisto" ]; then
+    kallisto index -i $(dirname $reference_fa)/kallisto_index.idx $reference_fa
+elif [ $aligner == "bwa" ]; then
+    bwa index $reference_fa
+else
+    echo "Invalid aligner"
+fi

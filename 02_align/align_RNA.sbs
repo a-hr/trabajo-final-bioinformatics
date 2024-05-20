@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#SBATCH --job-name=kallisto
+#SBATCH --cpus-per-task=10
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=00:15:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+module load Python
+conda activate /scratch/heral/envs/NGS
+
+index=$1
+fastqs_path=$2
+outdir=$3
+bootstraps=$4
+
+# Select the fastq files
+fastqs=($(realpath $fastqs_path/*_1.fastq.gz))
+fq1=${fastqs[$SLURM_ARRAY_TASK_ID]}
+fq2=${fq1/_1/_2}
+
+# Create output directory
+out=$outdir/$(basename $fq1 _1.fastq.gz)    
+mkdir -p $out
+
+# Run kallisto
+kallisto quant -t 10 -i $index -b $bootstraps -o $out $fq1 $fq2
