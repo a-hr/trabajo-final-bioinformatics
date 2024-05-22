@@ -14,3 +14,7 @@ bin/*
 
 # bam results
 **/*bams
+
+# Variant calling results
+**/*vcf/*
+**/*reports/*
