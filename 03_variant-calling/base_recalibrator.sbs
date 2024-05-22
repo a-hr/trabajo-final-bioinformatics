@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#SBATCH --job-name=base_recalibrator
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=10:00:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+module load Java/11.0.2
+
+GATK=/scratch/heral/TRABAJO_FINAL/bin/gatk-4.3.0.0/gatk
+
+bams_path=$1
+vcfs_path=$2
+reference_fa=$3
+recalibrated=$4  # yes or no
+
+if [ $recalibrated == "yes" ]; then
+    bam_files=($(ls $bams_path/*recalibrated.bam))
+    i=$SLURM_ARRAY_TASK_ID
+    bam=${bam_files[i]}
+
+    outname=$(basename $bam .bam).table
+
+elif [ $recalibrated == "no" ]; then
+    bam_files=($(ls $bams_path/*.bam | grep -v recalibrated))
+    i=$SLURM_ARRAY_TASK_ID
+    bam=${bam_files[i]}
+
+    outname=$(basename $bam .bam).table
+
+fi
+
+vcf_files=($(ls $vcfs_path/*.vcf))
+vcf=${vcf_files[i]}
+
+
+mkdir -p stats_reports
+
+$GATK BaseRecalibrator \
+    -I $bam \
+	-R $reference_fa \
+	--known-sites $vcf \
+	-O stats_reports/$outname

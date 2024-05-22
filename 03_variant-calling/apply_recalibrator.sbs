@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#SBATCH --job-name=apply_recalibrator
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=10:00:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+module load Java/11.0.2
+
+GATK=/scratch/heral/TRABAJO_FINAL/bin/gatk-4.3.0.0/gatk
+
+bams_path=$1
+tables_path=$2
+
+bam_files=($(ls $bams_path/*.bam))
+i=$SLURM_ARRAY_TASK_ID
+bam=${bam_files[i]}
+
+table_files=($(ls $tables_path/*.table))
+table=${table_files[i]}
+
+outname=$(basename $bam .bam)_recalibrated.bam
+
+$GATK ApplyBQSR \
+    -I $bam \
+	--bqsr $table \
+	-O $bams_path/$outname
+

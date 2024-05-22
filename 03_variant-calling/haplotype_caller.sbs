@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#SBATCH --job-name=VCF
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=10:00:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+module load Java/11.0.2
+
+GATK=/scratch/heral/TRABAJO_FINAL/bin/gatk-4.3.0.0/gatk
+
+bams_path=$1
+reference_fa=$2
+recalibrated=$3  # yes or no
+
+if [ $recalibrated == "yes" ]; then
+    bam_files=($(ls $bams_path/*recalibrated.bam))
+    i=$SLURM_ARRAY_TASK_ID
+    bam=${bam_files[i]}
+    outname=$(basename $bam .bam).vcf
+
+elif [ $recalibrated == "no" ]; then
+    bam_files=($(ls $bams_path/*.bam | grep -v recalibrated))
+    i=$SLURM_ARRAY_TASK_ID
+    bam=${bam_files[i]}
+    outname=$(basename $bam .bam).vcf
+fi
+
+mkdir -p vcf
+$GATK HaplotypeCaller \
+    -I $bam \
+    -R $reference_fa \
+    -O vcf/$outname

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#SBATCH --job-name=SeqDict
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=00:30:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+PICARD="/scratch/heral/TRABAJO_FINAL/bin/picard.jar"
+
+module load Java/11.0.2
+
+reference_fa=$1
+
+parent_dir=$(dirname $reference_fa)
+
+java -jar $PICARD CreateSequenceDictionary \
+    -R $reference_fa \
+    -O $parent_dir/$(basename $reference_fa .fa).dict
+
+# create index file (.fai) for reference fasta
+module load Python
+conda activate /scratch/heral/envs/NGS
+
+samtools faidx $reference_fa

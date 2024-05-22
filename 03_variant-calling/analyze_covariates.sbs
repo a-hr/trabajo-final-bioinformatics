@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#SBATCH --job-name=report
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=10:00:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+module load Java/11.0.2 R
+
+GATK=/scratch/heral/TRABAJO_FINAL/bin/gatk-4.3.0.0/gatk
+
+tables_dir=$1
+samples_dir=$2
+
+fastqs=($(ls $samples_dir/*_1.fastq.gz))
+sample=${fastqs[$SLURM_ARRAY_TASK_ID]}
+sample=$(basename $sample _1.fastq.gz)
+
+table_before=$(ls $tables_dir/$sample*.table | grep -v recalibrated)
+table_after=$(ls $tables_dir/$sample*.table  | grep recalibrated)
+
+mkdir -p reports
+
+$GATK AnalyzeCovariates \
+	--before $table_before \
+	--after $table_after \
+	--plots reports/${sample}_report.pdf
