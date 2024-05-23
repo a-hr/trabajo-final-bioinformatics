@@ -8,6 +8,6 @@
 #SBATCH -o ./logs/%x_%A_%a.outb
 
 module load Python
-conda activate /scratch/heral/envs/NGS
+conda activate /scratch/$USER/envs/NGS
 
 multiqc $1 -n $2

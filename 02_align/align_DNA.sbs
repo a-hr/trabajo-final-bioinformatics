@@ -8,7 +8,7 @@
 #SBATCH -o ./logs/%x_%A_%a.out
 
 module load Python
-conda activate /scratch/heral/envs/NGS
+conda activate /scratch/$USER/envs/NGS
 
 samples_path=$1
 samples1=($(realpath $samples_path/*_1.fastq.gz))

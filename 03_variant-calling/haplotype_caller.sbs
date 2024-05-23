@@ -9,7 +9,7 @@
 
 module load Java/11.0.2
 
-GATK=/scratch/heral/TRABAJO_FINAL/bin/gatk-4.3.0.0/gatk
+GATK=/scratch/$USER/trabajo-final-bioinformatics/bin/gatk-4.3.0.0/gatk
 
 bams_path=$1
 reference_fa=$2

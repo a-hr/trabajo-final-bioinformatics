@@ -10,10 +10,10 @@ TUMOR=/scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11682/tumor.b
 GATK=/scratch/$USER/trabajo-final-bioinformatics/bin/gatk-4.3.0.0/gatk
 
 
-reference_fa=/scratch/$USER/TRABAJO_FINAL/samples/references/GRCh38.primary_assembly.genome.fa
+reference_fa=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.fa
 
 # variant calling for each of the bams
-bams_path=/scratch/$USER/TRABAJO_FINAL/02_align/dna_bams
+bams_path=/scratch/$USER/trabajo-final-bioinformatics/02_align/dna_bams
 bams=($(ls $bams_path/*.bam))
 
 mkdir -p logs

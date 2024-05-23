@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-reference_fa=/scratch/heral/TRABAJO_FINAL/samples/references/GRCh38.primary_assembly.genome.fa
+reference_fa=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.fa
 
 # variant calling for each of the bams
-bams_path=/scratch/heral/TRABAJO_FINAL/02_align/dna_bams
+bams_path=/scratch/$USER/trabajo-final-bioinformatics/02_align/dna_bams
 bams=($(ls $bams_path/*.bam))
 
 mkdir -p logs

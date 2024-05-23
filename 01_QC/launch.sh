@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-cd /scratch/heral/TRABAJO_FINAL/01_QC
+cd /scratch/$USER/trabajo-final-bioinformatics/01_QC
 
 mkdir -p logs
 
-samples_path=/scratch/heral/TRABAJO_FINAL/samples
+samples_path=/scratch/$USER/trabajo-final-bioinformatics/samples
 
 # ---- RNA QC ----
 samples=( $(ls $samples_path/rna/*.gz) )

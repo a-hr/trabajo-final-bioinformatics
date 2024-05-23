@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-cd /scratch/heral/TRABAJO_FINAL/02_align
+cd /scratch/$USER/trabajo-final-bioinformatics/02_align
 mkdir -p logs
 
-samples_path=/scratch/heral/TRABAJO_FINAL/samples
-reference_fa=/scratch/heral/TRABAJO_FINAL/samples/references/GRCh38.primary_assembly.genome.fa
+samples_path=/scratch/$USER/trabajo-final-bioinformatics/samples
+reference_fa=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.fa
 reference_fa_transcriptome=$(dirname $reference_fa)/gencode.v38.transcripts.fa.gz
-reference_gtf=/scratch/heral/TRABAJO_FINAL/samples/references/gencode.v41.primary_assembly.annotation.gtf
+reference_gtf=/scratch/$USER/trabajo-final-bioinformatics/samples/references/gencode.v41.primary_assembly.annotation.gtf
 
 bootstraps=40
 

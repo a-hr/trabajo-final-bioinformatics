@@ -16,7 +16,7 @@ unzip gatk-4.3.0.0.zip
 
 '
 
-PICARD="/scratch/heral/TRABAJO_FINAL/bin/picard.jar"
+PICARD="/scratch/$USER/trabajo-final-bioinformatics/bin/picard.jar"
 
 module load Java/11.0.2
 
@@ -30,6 +30,6 @@ java -jar $PICARD CreateSequenceDictionary \
 
 # create index file (.fai) for reference fasta
 module load Python
-conda activate /scratch/heral/envs/NGS
+conda activate /scratch/$USER/envs/NGS
 
 samtools faidx $reference_fa

@@ -9,7 +9,7 @@
 
 module load Java/11.0.2 R
 
-GATK=/scratch/heral/TRABAJO_FINAL/bin/gatk-4.3.0.0/gatk
+GATK=/scratch/$USER/trabajo-final-bioinformatics/bin/gatk-4.3.0.0/gatk
 
 tables_dir=$1
 samples_dir=$2
