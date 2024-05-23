@@ -7,6 +7,15 @@
 #SBATCH --time=00:30:00
 #SBATCH -o ./logs/%x_%A_%a.out
 
+: '
+Extra dependencies:
+
+wget https://github.com/broadinstitute/picard/releases/download/2.27.5/picard.jar
+wget https://github.com/broadinstitute/gatk/releases/download/4.3.0.0/gatk-4.3.0.0.zip
+unzip gatk-4.3.0.0.zip
+
+'
+
 PICARD="/scratch/heral/TRABAJO_FINAL/bin/picard.jar"
 
 module load Java/11.0.2

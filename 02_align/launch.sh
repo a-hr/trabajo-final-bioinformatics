@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
-: '
-Extra dependencies:
-
-wget https://github.com/broadinstitute/picard/releases/download/2.27.5/picard.jar
-wget https://github.com/broadinstitute/gatk/releases/download/4.3.0.0/gatk-4.3.0.0.zip
-unzip gatk-4.3.0.0.zip
-
-'
-
 cd /scratch/heral/TRABAJO_FINAL/02_align
 mkdir -p logs
 
