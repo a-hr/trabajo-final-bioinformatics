@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
-REFERENCE=/scratch/heral/TRABAJO_FINAL/samples/references/GRCh38.primary_assembly.genome.fa
-DICT_REFERENCE=/scratch/aberbelgara/NGS22/samples/Homo_sapiens_assembly38.dict
-OUTPUT_DIR=/scratch/aberbelgara/NGS22/Output
-INTERVALS=/scratch/aberbelgara/NGS22/samples/tutorial_11682/targets_C.interval_list
-TUMOR=/scratch/aberbelgara/NGS22/samples/tutorial_11682/tumor.bam
-GATK=/scratch/aberbelgara/NGS22/gatk-4.3.0.0/gatk
 
 
-reference_fa=/scratch/heral/TRABAJO_FINAL/samples/references/GRCh38.primary_assembly.genome.fa
+REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.fa
+DICT_REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/Homo_sapiens_assembly38.dict
+OUTPUT_DIR=/scratch/$USER/trabajo-final-bioinformatics/04_CNV/Output
+INTERVALS=/scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11682/targets_C.interval_list
+TUMOR=/scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11682/tumor.bam
+GATK=/scratch/$USER/trabajo-final-bioinformatics/bin/gatk-4.3.0.0/gatk
+
+
+reference_fa=/scratch/$USER/TRABAJO_FINAL/samples/references/GRCh38.primary_assembly.genome.fa
 
 # variant calling for each of the bams
-bams_path=/scratch/heral/TRABAJO_FINAL/02_align/dna_bams
+bams_path=/scratch/$USER/TRABAJO_FINAL/02_align/dna_bams
 bams=($(ls $bams_path/*.bam))
 
 mkdir -p logs
