@@ -28,9 +28,12 @@ Each of these steps is encapsulated in a module, as detailed in the following se
 
 ## Module 01 - Quality control
 
+Starting from the FASTQ files, parallelized `FASTQC`is performed to both RNA and DNA samples. The results are then merged using `MultiQC` to generate a comprehensive report.
 
+All the subprocesses are launched from the `launch.sh` script, which manages their dependency relationships through SLURM job dependencies.
 
 ## Module 02 - Read alignment
+
 
 ## Module 03 - Variant calling
 
