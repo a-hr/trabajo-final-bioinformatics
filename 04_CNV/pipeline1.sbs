@@ -54,7 +54,7 @@ $GATK DenoiseReadCounts \
     -I /scratch/aberbelgara/NGS22/samples/tutorial_11682/hcc1143_T_clean.counts.hdf5 \
     --count-panel-of-normals /scratch/aberbelgara/NGS22/samples/tutorial_11682/cnvponC.pon.hdf5 \
     --standardized-copy-ratios $OUTPUT_DIR/$name.standardizedCR.tsv \
-    --number-of-eigensamples 10
+    --number-of-eigensamples 10 \
     --denoised-copy-ratios $OUTPUT_DIR/$name.denoisedCR.tsv
 
 
