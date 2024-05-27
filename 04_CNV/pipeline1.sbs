@@ -7,23 +7,66 @@
 #SBATCH --time=10:00:00
 #SBATCH -o ./logs/%x_%A_%a.out
 
-module load Java/11.0.2 R
+REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.fa
+DICT_REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/Homo_sapiens_assembly38.dict
+OUTPUT_DIR=/scratch/$USER/trabajo-final-bioinformatics/04_CNV/Output
+INTERVALS=/scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11682/targets_C.interval_list
+GATK=/scratch/$USER/trabajo-final-bioinformatics/bin/gatk-4.3.0.0/gatk
 
-GATK=/scratch/heral/TRABAJO_FINAL/bin/gatk-4.3.0.0/gatk
+bams_path=$1
+bams=($(ls $bams_path/*_recalibrated.bam))
+TUMOR=${bams[$SLURM_ARRAY_TASK_ID]}
+name=$(basename $TUMOR _recalibrated.bam)
 
-tables_dir=$1
-samples_dir=$2
+## STEPS:
 
-fastqs=($(ls $samples_dir/*_1.fastq.gz))
-sample=${fastqs[$SLURM_ARRAY_TASK_ID]}
-sample=$(basename $sample _1.fastq.gz)
+module load Java/11.0.2
+module load R/3.6.2-intel-2019a
 
-table_before=$(ls $tables_dir/$sample*.table | grep -v recalibrated)
-table_after=$(ls $tables_dir/$sample*.table  | grep recalibrated)
+#1 Collect raw counts data
 
-mkdir -p reports
+$GATK PreprocessIntervals \
+    -L $INTERVALS \
+    -R $REFERENCE \
+    --bin-length 0 \
+    --interval-merging-rule OVERLAPPING_ONLY \
+    -O $OUTPUT_DIR/targets_C.preprocessed.interval_list
 
-$GATK AnalyzeCovariates \
-	--before $table_before \
-	--after $table_after \
-	--plots reports/${sample}_report.pdf
+$GATK CollectReadCounts \
+    -I $TUMOR \
+    -L $INTERVALS \
+    --interval-merging-rule OVERLAPPING_ONLY \
+    -O $OUTPUT_DIR/$name.counts.hdf5
+
+#2 Generate a CNV panel of normals
+# (warning)
+
+#$GATK CreateReadCountPanelOfNormals \
+#    -I tutorial_11682/HG00133.alt_bwamem_GRCh38DH.20150826.GBR.exome.counts.hdf5 \
+#    -I tutorial_11682/HG00733.alt_bwamem_GRCh38DH.20150826.PUR.exome.counts.hdf5 \
+#    -I tutorial_11682/NA19654.alt_bwamem_GRCh38DH.20150826.MXL.exome.counts.hdf5 \
+#    --minimum-interval-median-percentile 5.0 \
+#    -O $OUTPUT_DIR/cnvponC.pon.hdf5
+
+#3 Standardize and denoise case read counts against the PoN
+
+$GATK DenoiseReadCounts \
+    -I /scratch/aberbelgara/NGS22/samples/tutorial_11682/hcc1143_T_clean.counts.hdf5 \
+    --count-panel-of-normals /scratch/aberbelgara/NGS22/samples/tutorial_11682/cnvponC.pon.hdf5 \
+    --standardized-copy-ratios $OUTPUT_DIR/$name.standardizedCR.tsv \
+    --number-of-eigensamples 10
+    --denoised-copy-ratios $OUTPUT_DIR/$name.denoisedCR.tsv
+
+
+#4 Plot standardized and denoised copy ratios
+## (PlotDenoisedCopyRatios requires packages optparse and data.table)
+
+
+
+$GATK PlotDenoisedCopyRatios \
+    --standardized-copy-ratios $OUTPUT_DIR/$name.standardizedCR.tsv \
+    --denoised-copy-ratios $OUTPUT_DIR/$name.denoisedCR.tsv \
+    --sequence-dictionary $DICT_REFERENCE \
+    --minimum-contig-length 46709983 \
+    --output $OUTPUT_DIR/plots \
+    --output-prefix $name
