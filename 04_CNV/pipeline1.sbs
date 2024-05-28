@@ -51,7 +51,7 @@ $GATK CollectReadCounts \
 #3 Standardize and denoise case read counts against the PoN
 
 $GATK DenoiseReadCounts \
-    -I /scratch/aberbelgara/NGS22/samples/tutorial_11682/hcc1143_T_clean.counts.hdf5 \
+    -I $OUTPUT_DIR/$name.counts.hdf5 \
     --count-panel-of-normals /scratch/aberbelgara/NGS22/samples/tutorial_11682/cnvponC.pon.hdf5 \
     --standardized-copy-ratios $OUTPUT_DIR/$name.standardizedCR.tsv \
     --number-of-eigensamples 10 \
