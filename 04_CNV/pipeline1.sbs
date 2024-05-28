@@ -8,7 +8,7 @@
 #SBATCH -o ./logs/%x_%A_%a.out
 
 REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.fa
-DICT_REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/Homo_sapiens_assembly38.dict
+DICT_REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.dict
 OUTPUT_DIR=/scratch/$USER/trabajo-final-bioinformatics/04_CNV/Output
 INTERVALS=/scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11682/targets_C.interval_list
 GATK=/scratch/$USER/trabajo-final-bioinformatics/bin/gatk-4.3.0.0/gatk
@@ -51,8 +51,8 @@ $GATK CollectReadCounts \
 #3 Standardize and denoise case read counts against the PoN
 
 $GATK DenoiseReadCounts \
-    -I $OUTPUT_DIR/$name.counts.hdf5 \
-    --count-panel-of-normals /scratch/aberbelgara/NGS22/samples/tutorial_11682/cnvponC.pon.hdf5 \
+    -I /scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11682/hcc1143_T_clean.counts.hdf5 \
+    --count-panel-of-normals /scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11682/cnvponC.pon.hdf5 \
     --standardized-copy-ratios $OUTPUT_DIR/$name.standardizedCR.tsv \
     --number-of-eigensamples 10 \
     --denoised-copy-ratios $OUTPUT_DIR/$name.denoisedCR.tsv
