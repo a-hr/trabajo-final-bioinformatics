@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#SBATCH --job-name=report
+#SBATCH --cpus-per-task=1
+#SBATCH --nodes=1
+#SBATCH --mem=16G
+#SBATCH --time=10:00:00
+#SBATCH -o ./logs/%x_%A_%a.out
+
+## INPUTS:
+
+
+REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.fa
+DICT_REFERENCE=/scratch/$USER/trabajo-final-bioinformatics/samples/references/GRCh38.primary_assembly.genome.dict
+INTERVALS=/scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11683/chr17_theta_snps.interval_list
+#TUMOR=/scratch/aberbelgara/NGS22/samples/tutorial_11683/tumor.bam
+GATK=/scratch/$USER/trabajo-final-bioinformatics/bin/gatk-4.3.0.0/gatk
+NORMAL=/scratch/$USER/trabajo-final-bioinformatics/samples/tutorial_11683/normal.bam
+OUTPUT_DIR=/scratch/$USER/trabajo-final-bioinformatics/04_CNV/Output2
+
+bams_path=$1
+bams=($(ls $bams_path/*_recalibrated.bam))
+TUMOR=${bams[$SLURM_ARRAY_TASK_ID]}
+name=$(basename $TUMOR _recalibrated.bam)
+
+## STEPS:
+module load Java/11.0.2
+module load R/3.6.2-intel-2019a
+
+#1 Count ref and alt alleles at common germline variant sites
+
+$GATK --java-options "-Xmx3g" CollectAllelicCounts \
+    -L $INTERVALS \
+    -I $NORMAL \
+    -R $REFERENCE \
+    -O $OUTPUT_DIR/$name _N.allelicCounts.tsv
+
+
+$GATK --java-options "-Xmx3g" CollectAllelicCounts \
+    -L $INTERVALS \
+    -I $TUMOR \
+    -R $REFERENCE \
+    -O $OUTPUT_DIR/$name _T.allelicCounts.tsv
+
+#2 Group contiguous copy ratios into segments
+
+$GATK --java-options "-Xmx4g" ModelSegments \
+--denoised-copy-ratios /scratch/$USER/trabajo-final-bioinformatics/04_CNV/Output/$name.denoisedCR.tsv \
+    --allelic-counts $OUTPUT_DIR/$name _T.allelicCounts.tsv \
+    --normal-allelic-counts $OUTPUT_DIR/$name _N.allelicCounts.tsv \
+    --output $OUTPUT_DIR \
+    --output-prefix $name
+
+
+#3 Call copy-neutral (Amplified and deleted segments)
+
+# This step is not required for plotting segmentation results.
+# The resulting called.seg data adds the sixth column to the provided copy
+# ratio segmentation table.
+# The tool denotes amplifications with a + plus sign, deletions with a - minus sign and neutral segments with a 0 zero.
+
+$GATK CallCopyRatioSegments \
+    --input $OUTPUT_DIR/$name _T.cr.seg \
+    --output $OUTPUT_DIR/$name _T.called.seg
+
+
+#4 Plot modeled copy ratio and allelic fraction segments
+## (PlotDenoisedCopyRatios requires packages optparse and data.table)
+
+$GATK PlotModeledSegments \
+    --denoised-copy-ratios /scratch/$USER/trabajo-final-bioinformatics/04_CNV/Output/$name.denoisedCR.tsv \
+    --allelic-counts $OUTPUT_DIR/$name.hets.tsv \
+    --segments $OUTPUT_DIR/$name.modelFinal.seg \
+    --sequence-dictionary $DICT_REFERENCE \
+    --minimum-contig-length 46709983 \
+    --output $OUTPUT_DIR/plots \
+    --output-prefix $name
