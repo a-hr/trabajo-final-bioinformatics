@@ -18,3 +18,9 @@ bin/*
 # Variant calling results
 **/*vcf/*
 **/*reports/*
+
+# CNV results
+*.hdf5
+04_CNV/Output/*.tsv
+04_CNV/Output/plots/*.txt
+samples/tutorial_*
